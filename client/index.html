@@ -1,0 +1,76 @@
+<html>
+	<head>
+		<title>1955 API</title>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+		 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular.min.js"></script>
+		 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular-route.min.js"></script>
+		 <script>
+		 	var myApp = angular.module('myApp', ['ngRoute']);
+
+			myApp.config(function($routeProvider){
+				$routeProvider
+					.when('/', {
+						templateUrl: 'partials/create.html'
+					})
+			})
+
+		 	myApp.factory('UserFactory', function($http){
+		 		var factory = {};
+		 		var people = [];
+		 		factory.index = function(callback){
+		 			$http.get('people').success(function(output){
+		 				people = output;
+		 				callback(people);
+		 			});
+		 		};
+		 		factory.create = function(person, callback){
+		 			$http.post('/people', person).success(function(output){
+		 				callback();
+		 			})
+		 		};
+		 		factory.destroy = function(index, callback){
+		 			console.log(index + 'factory')
+		 			var id = people[index]._id;
+		 			console.log(id);
+		 			$http.delete('/people/' + id).success(function(output){
+		 				callback();
+		 			})
+		 		}
+		 		return factory;
+		 	});
+
+		 	myApp.controller('UsersController', function($scope, UserFactory){
+		 		UserFactory.index(function(data){
+		 			$scope.people = data;
+
+		 		});
+		 		$scope.addPerson = function(){
+		 			UserFactory.create($scope.new_person, function(data){
+		 				$scope.new_person = {};
+		 				UserFactory.index(function(data){
+		 					$scope.people = data;
+		 				})
+		 			})
+		 		};
+		 		$scope.deletePerson = function($index){
+		 			console.log($index);
+		 			UserFactory.destroy($index, function(data){
+		 				UserFactory.index(function(data){
+		 					$scope.people = data;
+		 				})
+		 			})
+		 		}
+		 	})
+		 </script>
+	</head>
+	<body ng-app='myApp'>
+		<div class='container'>
+			<h1>1955 Dashboard</h1>
+			<hr>
+			<div ng-view=''>
+			</div>
+		</div>
+	</body>
+</html>

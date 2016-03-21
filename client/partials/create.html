@@ -1,0 +1,19 @@
+<div ng-controller='UsersController'>
+	<div class='col-md-offset-6'>
+		<h4>Add People Who Were Born in 1955!</h4>
+		<input type='text' ng-model='new_person.name'>
+		<button ng-click='addPerson()' class='btn btn-primary'>Submit</button>
+	</div>
+	<table class='table'>
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Action</th>
+			</tr>
+		</thead>
+			<tr ng-repeat='peep in people track by $index'>
+				<td>{{ peep.name}}</td>
+				<td><button class='btn btn-danger' ng-click='deletePerson($index)'>Delete</button>
+			</tr>
+	</table>
+</div>
